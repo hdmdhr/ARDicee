@@ -25,7 +25,6 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.showsStatistics = true
         
         // Create a new scene
-        let diceScene = SCNScene(named: "art.scnassets/diceCollada.scn")!
         let cube = SCNBox(width: 0.1, height: 0.1, length: 0.1, chamferRadius: 0.02)
         let ball = SCNSphere(radius: 0.25)
         let material = SCNMaterial()
@@ -37,15 +36,13 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         
         let cude_node = SCNNode(geometry: cube)
         let ball_node = SCNNode(geometry: ball)
-        let dice_node = diceScene.rootNode.childNode(withName: "Dice", recursively: true)!
         
         cude_node.position = SCNVector3(0, 0.5, -0.5)  // -z is away from user
         ball_node.position = SCNVector3(0.2, 0.2, -1)  // -z is away from user
-        dice_node.position = SCNVector3(0, 0, -0.1)
         
         sceneView.scene.rootNode.addChildNode(cude_node)
         sceneView.scene.rootNode.addChildNode(ball_node)
-        sceneView.scene.rootNode.addChildNode(dice_node)
+        
 
         sceneView.autoenablesDefaultLighting = true
         
@@ -105,10 +102,16 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             let touchLocation = touch.location(in: sceneView)
             let results = sceneView.hitTest(touchLocation, types: .existingPlaneUsingExtent)
             
-            if results.isEmpty {
-                print("You didn't touch in the plane.")
-            } else {
-                print("You touched on the plane!")
+            if let hitResult = results.first {
+                print(hitResult)
+                
+                let diceScene = SCNScene(named: "art.scnassets/diceCollada.scn")!
+                let dice_node = diceScene.rootNode.childNode(withName: "Dice", recursively: true)!
+                dice_node.position = SCNVector3(hitResult.worldTransform.columns.3.x,
+                                                hitResult.worldTransform.columns.3.y + dice_node.boundingSphere.radius,
+                                                hitResult.worldTransform.columns.3.z)
+
+                sceneView.scene.rootNode.addChildNode(dice_node)
             }
         }
     }
