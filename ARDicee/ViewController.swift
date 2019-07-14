@@ -21,6 +21,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.delegate = self
         
         // Show statistics such as fps and timing information
+        sceneView.debugOptions = [.showFeaturePoints]
         sceneView.showsStatistics = true
         
         // Create a new scene
@@ -77,4 +78,24 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         sceneView.session.pause()
     }
 
+    // MARK: - Deletgate Methods
+    func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
+        if let planeAnchor = anchor as? ARPlaneAnchor {
+            let plane = SCNPlane(width: CGFloat(planeAnchor.extent.x),
+                                 height: CGFloat(planeAnchor.extent.z))
+            let plane_node = SCNNode(geometry: plane)
+            plane_node.position = SCNVector3(planeAnchor.center.x, planeAnchor.center.y, planeAnchor.center.z)
+            
+            // when plane node created, it is vertical, so rotate 90 degrees on X axis
+            plane_node.transform = SCNMatrix4MakeRotation(-Float.pi/2, 1, 0, 0)
+            
+            let gridMaterial = SCNMaterial()
+            gridMaterial.diffuse.contents = UIImage(named: "art.scnassets/grid.png")
+            
+            plane.materials = [gridMaterial]
+            
+            node.addChildNode(plane_node)
+        }
+    }
+    
 }
