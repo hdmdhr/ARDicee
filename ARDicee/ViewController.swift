@@ -79,6 +79,7 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     }
 
     // MARK: - Deletgate Methods
+    // find a horizontal plane
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
         if let planeAnchor = anchor as? ARPlaneAnchor {
             let plane = SCNPlane(width: CGFloat(planeAnchor.extent.x),
@@ -95,6 +96,20 @@ class ViewController: UIViewController, ARSCNViewDelegate {
             plane.materials = [gridMaterial]
             
             node.addChildNode(plane_node)
+        }
+    }
+    
+    // detect where user touched
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        if let touch = touches.first {
+            let touchLocation = touch.location(in: sceneView)
+            let results = sceneView.hitTest(touchLocation, types: .existingPlaneUsingExtent)
+            
+            if results.isEmpty {
+                print("You didn't touch in the plane.")
+            } else {
+                print("You touched on the plane!")
+            }
         }
     }
     
