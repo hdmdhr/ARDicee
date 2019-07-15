@@ -98,22 +98,27 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     
     // detect where user touched
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let touch = touches.first {
-            let touchLocation = touch.location(in: sceneView)
-            let results = sceneView.hitTest(touchLocation, types: .existingPlaneUsingExtent)
-            
-            if let hitResult = results.first {
-                print(hitResult)
-                
-                let diceScene = SCNScene(named: "art.scnassets/diceCollada.scn")!
-                let dice_node = diceScene.rootNode.childNode(withName: "Dice", recursively: true)!
-                dice_node.position = SCNVector3(hitResult.worldTransform.columns.3.x,
-                                                hitResult.worldTransform.columns.3.y + dice_node.boundingSphere.radius,
-                                                hitResult.worldTransform.columns.3.z)
+        guard let touch = touches.first else { return }
+        let touchLocation = touch.location(in: sceneView)
+        let results = sceneView.hitTest(touchLocation, types: .existingPlaneUsingExtent)
+        
+        guard let hitResult = results.first else { return }
+        print(hitResult)
+        
+        let diceScene = SCNScene(named: "art.scnassets/diceCollada.scn")!
+        let dice_node = diceScene.rootNode.childNode(withName: "Dice", recursively: true)!
+        dice_node.position = SCNVector3(hitResult.worldTransform.columns.3.x,
+                                        hitResult.worldTransform.columns.3.y + dice_node.boundingSphere.radius,
+                                        hitResult.worldTransform.columns.3.z)
 
-                sceneView.scene.rootNode.addChildNode(dice_node)
-            }
-        }
+        sceneView.scene.rootNode.addChildNode(dice_node)
+        
+        let randomX = CGFloat.random(in: 1...16).rounded() * CGFloat.pi / 2
+        let randomZ = CGFloat.random(in: 1...16).rounded() * CGFloat.pi / 2
+        let randomTime = Double.random(in: 0.4...2)
+        
+        dice_node.runAction(SCNAction.rotateBy(x: randomX, y: 0, z: randomZ, duration: randomTime))
+        
     }
     
 }
