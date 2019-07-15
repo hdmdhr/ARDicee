@@ -21,6 +21,11 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         rollAllDices()
     }
     
+    @IBAction func removeAllDiceButtonPressed(_ sender: UIBarButtonItem) {
+        diceArray.forEach {
+            $0.removeFromParentNode()
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -86,22 +91,12 @@ class ViewController: UIViewController, ARSCNViewDelegate {
     // MARK: - Deletgate Methods
     // find a horizontal plane
     func renderer(_ renderer: SCNSceneRenderer, didAdd node: SCNNode, for anchor: ARAnchor) {
-        if let planeAnchor = anchor as? ARPlaneAnchor {
-            let plane = SCNPlane(width: CGFloat(planeAnchor.extent.x),
-                                 height: CGFloat(planeAnchor.extent.z))
-            let plane_node = SCNNode(geometry: plane)
-            plane_node.position = SCNVector3(planeAnchor.center.x, planeAnchor.center.y, planeAnchor.center.z)
-            
-            // when plane node created, it is vertical, so rotate 90 degrees on X axis
-            plane_node.transform = SCNMatrix4MakeRotation(-Float.pi/2, 1, 0, 0)
-            
-            let gridMaterial = SCNMaterial()
-            gridMaterial.diffuse.contents = UIImage(named: "art.scnassets/grid.png")
-            
-            plane.materials = [gridMaterial]
-            
-            node.addChildNode(plane_node)
-        }
+        guard let planeAnchor = anchor as? ARPlaneAnchor else { return }
+        
+        let plane_node = createPlane(withPlaneAnchor: planeAnchor)
+        
+        node.addChildNode(plane_node)
+
     }
     
     // detect where user touched
@@ -145,5 +140,21 @@ class ViewController: UIViewController, ARSCNViewDelegate {
         dice.runAction(SCNAction.rotateBy(x: randomX, y: 0, z: randomZ, duration: randomTime))
     }
     
+    func createPlane(withPlaneAnchor planeAnchor: ARPlaneAnchor) -> SCNNode {
+        let plane = SCNPlane(width: CGFloat(planeAnchor.extent.x),
+                             height: CGFloat(planeAnchor.extent.z))
+        let plane_node = SCNNode(geometry: plane)
+        plane_node.position = SCNVector3(planeAnchor.center.x, planeAnchor.center.y, planeAnchor.center.z)
+        
+        // when plane node created, it is vertical, so rotate 90 degrees on X axis
+        plane_node.transform = SCNMatrix4MakeRotation(-Float.pi/2, 1, 0, 0)
+        
+        let gridMaterial = SCNMaterial()
+        gridMaterial.diffuse.contents = UIImage(named: "art.scnassets/grid.png")
+        
+        plane.materials = [gridMaterial]
+        
+        return plane_node
+    }
 
 }

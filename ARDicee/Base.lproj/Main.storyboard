@@ -32,6 +32,11 @@
                         <viewLayoutGuide key="safeArea" id="fQZ-KI-GVf"/>
                     </view>
                     <navigationItem key="navigationItem" id="a95-9B-dEd">
+                        <barButtonItem key="leftBarButtonItem" systemItem="trash" id="0Pv-6Z-Rcd">
+                            <connections>
+                                <action selector="removeAllDiceButtonPressed:" destination="BV1-FR-VrT" id="cda-6V-Ife"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="IH7-4W-P4g">
                             <connections>
                                 <action selector="rollAgainButtonPressed:" destination="BV1-FR-VrT" id="OXm-dU-j2K"/>
