@@ -12,7 +12,15 @@ import ARKit
 
 class ViewController: UIViewController, ARSCNViewDelegate {
 
+    // MARK: - Global Vars
     @IBOutlet var sceneView: ARSCNView!
+    var diceArray = [SCNNode]()
+    
+    // MARK: - @IBActions
+    @IBAction func rollAgainButtonPressed(_ sender: UIBarButtonItem) {
+        rollAllDices()
+    }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -111,14 +119,31 @@ class ViewController: UIViewController, ARSCNViewDelegate {
                                         hitResult.worldTransform.columns.3.y + dice_node.boundingSphere.radius,
                                         hitResult.worldTransform.columns.3.z)
 
+        diceArray.append(dice_node)
         sceneView.scene.rootNode.addChildNode(dice_node)
+        rollDice(dice_node)
         
+    }
+    
+    // when shake phone, roll all dices
+    override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        rollAllDices()
+    }
+    
+    // MARK: - My Methods
+    func rollAllDices() {
+        for dice in diceArray {
+            rollDice(dice)
+        }
+    }
+    
+    func rollDice(_ dice: SCNNode) {
         let randomX = CGFloat.random(in: 1...16).rounded() * CGFloat.pi / 2
         let randomZ = CGFloat.random(in: 1...16).rounded() * CGFloat.pi / 2
         let randomTime = Double.random(in: 0.4...2)
         
-        dice_node.runAction(SCNAction.rotateBy(x: randomX, y: 0, z: randomZ, duration: randomTime))
-        
+        dice.runAction(SCNAction.rotateBy(x: randomX, y: 0, z: randomZ, duration: randomTime))
     }
     
+
 }
